@@ -6,7 +6,7 @@
 rm(list = ls()) # This clears the R environment
 
 
-setwd("C:\\Users\\Sheryl\\Documents\\Deshaies, Stout, and Tillman")  # Working directory for Kevin
+setwd("C:\\Users\\Sheryl\\Documents\\Deshaies, Stout, and Tillman") 
 
 govparty <- read.csv("Data/GovParty.csv")
 presparty <- read.csv("Data/PresParty.csv")
@@ -111,7 +111,7 @@ htmlreg(gov.decs, file = "Table1.doc", omit.coef = ("as.factor"))
 
 ## Process for generating Marginal Effect Figures
 
-# This section is needed backgound processes
+# This section contains needed backgound processes
 
 V.gov.decs <- vcov(gov.decs) # Takes a minute to run
 
@@ -162,18 +162,29 @@ figure2 <- data.frame(WeatherDamage = z0.damage.gov.decs,
                       DecEffect = govvote.dy.declaration.dx.gov.decs,
                       Declower = lower.bound.declaration.gov.decs,
                       Decupper = upper.bound.declaration.gov.decs)
+                      
 
 g2 <- ggplot(figure2, aes(WeatherDamage, DecEffect))
-plot2 <- g2 + geom_line(data = figure2, aes(WeatherDamage), size = 1, color = "Black") + 
-  geom_line(data = figure2, aes(WeatherDamage, Decupper, Declower),
-                width = 0, size = 1, color = "Black") + ylim(-1, 8) +
-  geom_hline(yintercept = 0, slope = 1, size = 1) +
+plot2 <- g2 + #geom_hline(yintercept = 0, slope = 1, size = .5, lty = "dotted") +
+  geom_line(data = figure2, aes(WeatherDamage), size = 1, color = "Black") + 
+  geom_line(data = figure2, aes(WeatherDamage),
+                width = 0, size = 1, color = "Black") +
+  geom_line(data = figure2, aes(WeatherDamage, Declower), 
+            width = 0, size = .6, color = "Black", lty = "longdash") +
+  geom_line(data = figure2, aes(WeatherDamage, Decupper), 
+            width = 0, size = .6, color = "Black", lty = "longdash") + 
+  scale_y_continuous(limits = c(-2, 8), breaks = c(-2, 0, 2, 4, 6, 8))  +
   xlab("Weather Damage in Logged Dollars") + ylab("Marginal Effect") +
   ggtitle("Figure 1: Marginal Effect of Disaster Declaration") +
   theme_classic(base_size = 16) + 
   theme(axis.title.x = element_text(vjust = 0),
         axis.title.y = element_text(vjust = 1.5), plot.title = element_text(vjust = 2))
+
 plot2
+
+pdf(file = "Figure 2.pdf")
+plot2
+dev.off()
 
 ## APPENDIX B
 
